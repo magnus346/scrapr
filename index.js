@@ -6,5 +6,6 @@ exports.handler = async (event) => {
     statusCode: 200,
     body: JSON.stringify("Hello from Lambda and Github : "+JSON.stringify(result.data)),
   }
+  // test
   return response;
 }
