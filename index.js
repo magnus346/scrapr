@@ -18,6 +18,7 @@ const scrapers = {
 			selectRandomUserAgent()
 		})
 		.then((response) => {
+			console.log(response.body);
 			let $ = cheerio.load(response.body);
 
 			let results = [];
