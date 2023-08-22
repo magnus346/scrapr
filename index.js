@@ -33,7 +33,7 @@ const scrapers = {
 				})
 			})
 			let sorted = Object.entries(maxSpeed)
-				.sort(([,a],[,b]) => (parseFloat(a).price+parseFloat(a).shipping)-(parseFloat(b).price+parseFloat(b).shipping))
+				.sort(([,a],[,b]) => (parseFloat(a.price)+parseFloat(a.shipping))-(parseFloat(b.price)+parseFloat(b.shipping)))
 				.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
 			return sorted;
 		})
