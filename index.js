@@ -41,6 +41,12 @@ const scrapers = {
 }
 
 exports.handler = async (event) => {
+	const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
+	return {
+		statusCode: 200,
+		body: JSON.stringify({ip: ip.data, id: process.env.AWS_ACCESS_KEY_ID})
+	}
+	/*
 	const { id } = event.pathParameters;
 	let results = null;
 	try {
@@ -79,4 +85,5 @@ exports.handler = async (event) => {
 		body: JSON.stringify({prices: results})
 	}
 	return response;
+	*/
 }
