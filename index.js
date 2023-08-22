@@ -25,11 +25,11 @@ const scrapers = {
 			
 			if($(".g-recaptcha").length)
 				throw new Error('Recaptcha');
-			$(".shortcut_navigable").each((i,el) => {
+			$(".item-price").each((i,el) => {
 				results.push({
-					price: $(el).find(".item-price").find(".price").first().attr("data-pricevalue"),
-					currency: $(el).find(".item-price").find(".price").first().attr("data-currency"),
-					shipping: $(el).find(".item-price").find(".item-shipping").first().text()
+					price: $(el).find(".price").first().attr("data-pricevalue"),
+					currency: $(el).find(".price").first().attr("data-currency"),
+					shipping: $(el).find(".item-shipping").first().text()
 				})
 			})
 			return results;
