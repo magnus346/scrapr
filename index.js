@@ -28,7 +28,7 @@ const scrapers = {
 				results.push({
 					price: $(el).find(".price").first().attr("data-pricevalue"),
 					currency: $(el).find(".price").first().attr("data-currency"),
-					shipping: $(el).find(".item_shipping").first().text().replace(/\D/g,'').replace(/\,/g,'.')
+					shipping: $(el).find(".item_shipping").first().text().replace(/\D/g,'').replace(/,/g,'.')
 				})
 			})
 			return results;
@@ -38,7 +38,8 @@ const scrapers = {
 
 exports.handler = async (event) => {
   //const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
-  const results = await scrapers.discogsPrices(1355727)
+  const { id } = event.pathParameters;
+  const results = await scrapers.discogsPrices(id)
   const response = {
     statusCode: 200,
     body: JSON.stringify({prices: results}),
