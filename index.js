@@ -28,7 +28,7 @@ const scrapers = {
 				results.push({
 					price: $(el).find(".price").first().attr("data-pricevalue"),
 					currency: $(el).find(".price").first().attr("data-currency"),
-					shipping: $(el).find(".item_shipping").first().text()
+					shipping: $(el).find(".item_shipping").first().text().replace(/\D/g,'').replace(/\,/g,'.')
 				})
 			})
 			return results;
