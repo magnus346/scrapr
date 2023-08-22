@@ -32,10 +32,7 @@ const scrapers = {
 					condition: $(el).find(".item_sleeve_condition").first().text()
 				})
 			})
-			let sorted = Object.entries(maxSpeed)
-				.sort(([,a],[,b]) => (parseFloat(a.price)+parseFloat(a.shipping))-(parseFloat(b.price)+parseFloat(b.shipping)))
-				.reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
-			return sorted;
+			return results;
 		})
 	}
 }
