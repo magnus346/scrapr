@@ -38,13 +38,39 @@ const scrapers = {
 }
 
 exports.handler = async (event) => {
-  //const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
-  const { id } = event.pathParameters;
-  const results = await scrapers.discogsPrices(id)
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({prices: results}),
-  }
-  // test
-  return response;
+	const { id } = event.pathParameters;
+	try {
+		const results = await scrapers.discogsPrices(id)
+	} catch() {
+		const githubToken = process.env.GITHUB_TOKEN;
+		const runs = await axios({
+			method: "get",
+			url: 'https://api.github.com/repos/magnus346/scrapr/actions/runs',
+			headers: {
+				'Authorization': 'Bearer '+githubToken,
+				'Content-Type': 'application/json',
+				'X-GitHub-Api-Version': '2022-11-28'
+			}
+		});
+		for(let run of runs.data.workflow_runs) {
+			axios({
+				method: "post",
+				url: 'https://api.github.com/repos/magnus346/scrapr/actions/runs/'+run.id+'/rerun',
+				headers: {
+					'Authorization': 'Bearer '+githubToken,
+					'Content-Type': 'application/json',
+					'X-GitHub-Api-Version': '2022-11-28'
+				}
+			});		
+			const response = {
+				statusCode: 429
+			}
+			return response;
+		}  
+	}
+	const response = {
+		statusCode: 200,
+		body: JSON.stringify({prices: results})
+	}
+	return response;
 }
