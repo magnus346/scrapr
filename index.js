@@ -37,11 +37,11 @@ const scrapers = {
 }
 
 exports.handler = async (event) => {
-  const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
+  //const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
   const results = await scrapers.discogsPrices(1355727)
   const response = {
     statusCode: 200,
-    body: JSON.stringify("Hello from Lambda and Github : "+JSON.stringify({ip: ip.data, results: results})),
+    body: JSON.stringify({prices: results}),
   }
   // test
   return response;
