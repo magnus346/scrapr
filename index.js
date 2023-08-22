@@ -24,11 +24,12 @@ const scrapers = {
 			
 			if($(".g-recaptcha").length)
 				throw new Error('Recaptcha');
-			$(".item_price").each((i,el) => {
+			$("tr[data-release-id]").each((i,el) => {
 				results.push({
-					price: $(el).find(".price").first().attr("data-pricevalue"),
-					currency: $(el).find(".price").first().attr("data-currency"),
-					shipping: $(el).find(".item_shipping").first().text().replace(/,/g,'.').replace(/[^\d\.]/g,'')
+					price: $(el).find('.item_price').find(".price").first().attr("data-pricevalue"),
+					currency: $(el).find('.item_price').find(".price").first().attr("data-currency"),
+					shipping: $(el).find('.item_price').find(".item_shipping").first().text().replace(/,/g,'.').replace(/[^\d\.]/g,''),
+					condition: $(el).find(".item_sleeve_condition").first().text()
 				})
 			})
 			return results;
