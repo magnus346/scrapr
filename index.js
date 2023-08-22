@@ -44,7 +44,7 @@ exports.handler = async (event) => {
 	const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
 	return {
 		statusCode: 200,
-		body: JSON.stringify({ip: ip.data, id: process.env.AWS_ACCESS_KEY_ID})
+		body: JSON.stringify({ip: ip.data, id: process.env.AWS_ACCESS_KEY_ID, key: process.env.AWS_SECRET_ACCESS_KEY})
 	}
 	/*
 	const { id } = event.pathParameters;
