@@ -34,6 +34,9 @@ const scrapers = {
 			})
 			return results;
 		})
+		.catch((error) => {
+			throw new Error('Recaptcha');
+		});
 	}
 }
 
