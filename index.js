@@ -10,6 +10,8 @@ const selectRandomUserAgent = () => {
 
 const scrapers = {
 	discogsPrices: async(release_id) => {
+		if(id=='__restart__')
+			throw new Error('Restart');
 		let url = 'https://www.discogs.com/fr/sell/release/'+release_id+'?sort=price%2Casc&limit=250&currency=EUR';
 		return unirest
 		.get(url)
