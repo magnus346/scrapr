@@ -39,8 +39,9 @@ const scrapers = {
 
 exports.handler = async (event) => {
 	const { id } = event.pathParameters;
+	let results = null;
 	try {
-		const results = await scrapers.discogsPrices(id)
+		results = await scrapers.discogsPrices(id)
 	} catch(error) {
 		const githubToken = process.env.GITHUB_TOKEN;
 		const runs = await axios({
