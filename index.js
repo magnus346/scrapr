@@ -18,18 +18,17 @@ const scrapers = {
 			selectRandomUserAgent()
 		})
 		.then((response) => {
-			console.log(response.body);
 			let $ = cheerio.load(response.body);
 
 			let results = [];
 			
 			if($(".g-recaptcha").length)
 				throw new Error('Recaptcha');
-			$(".item-price").each((i,el) => {
+			$(".item_price").each((i,el) => {
 				results.push({
 					price: $(el).find(".price").first().attr("data-pricevalue"),
 					currency: $(el).find(".price").first().attr("data-currency"),
-					shipping: $(el).find(".item-shipping").first().text()
+					shipping: $(el).find(".item_shipping").first().text()
 				})
 			})
 			return results;
