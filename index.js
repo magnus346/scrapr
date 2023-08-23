@@ -61,7 +61,7 @@ exports.handler = async (event) => {
 			"accessKeyId": process.env.USER_AWS_ACCESS_KEY_ID,
 			"secretAccessKey": process.env.USER_AWS_SECRET_ACCESS_KEY
 		};
-		const lambda = new AWS.Lambda();
+		const lambda = ;
 		const params = {
 		  FunctionName: 'scrapr',
 		  Environment: {
@@ -72,8 +72,11 @@ exports.handler = async (event) => {
 			}
 		  }
 		};
-		lambda.updateFunctionConfiguration(params, function(err, data) {
+		new AWS.Lambda().updateFunctionConfiguration(params, function(err, data) {
 		  if (err) console.log(err, err.stack);
+		  return {
+				statusCode: 429
+			};
 		});
 	}
 	const response = {
