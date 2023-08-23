@@ -1,6 +1,7 @@
 const axios = require('axios');
 const cheerio = require("cheerio");
 const unirest = require("unirest");
+const AWS = require('aws-sdk');
 
 const selectRandomUserAgent = () => {
     const userAgents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"]
@@ -41,12 +42,13 @@ const scrapers = {
 }
 
 exports.handler = async (event) => {
+	/*
 	const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
 	return {
 		statusCode: 200,
 		body: JSON.stringify({ip: ip.data})
 	}
-	/*
+	*/
 	const { id } = event.pathParameters;
 	let results = null;
 	try {
@@ -54,36 +56,29 @@ exports.handler = async (event) => {
 			throw new Error('Restart');
 		results = await scrapers.discogsPrices(id)
 	} catch(error) {
-		const githubToken = process.env.GITHUB_TOKEN;
-		const runs = await axios({
-			method: "get",
-			url: 'https://api.github.com/repos/magnus346/scrapr/actions/runs',
-			headers: {
-				'Authorization': 'Bearer '+githubToken,
-				'Content-Type': 'application/json',
-				'X-GitHub-Api-Version': '2022-11-28'
+		AWS.config.update({region:'eu-west-3'});
+		AWS.config.credentials = { 
+			"accessKeyId": process.env.USER_AWS_ACCESS_KEY_ID,
+			"secretAccessKey": process.env.USER_AWS_SECRET_ACCESS_KEY
+		};
+		const lambda = new AWS.Lambda();
+		const params = {
+		  FunctionName: 'scrapr',
+		  Environment: {
+			Variables: {
+			  'USER_AWS_ACCESS_KEY_ID': process.env.USER_AWS_ACCESS_KEY_ID,
+			  'USER_AWS_SECRET_ACCESS_KEY': process.env.USER_AWS_SECRET_ACCESS_KEY,
+			  'RESTART_TIME': Date.now().toString()
 			}
+		  }
+		};
+		lambda.updateFunctionConfiguration(params, function(err, data) {
+		  if (err) console.log(err, err.stack);
 		});
-		for(let run of runs.data.workflow_runs) {
-			axios({
-				method: "post",
-				url: 'https://api.github.com/repos/magnus346/scrapr/actions/runs/'+run.id+'/rerun',
-				headers: {
-					'Authorization': 'Bearer '+githubToken,
-					'Content-Type': 'application/json',
-					'X-GitHub-Api-Version': '2022-11-28'
-				}
-			});		
-			const response = {
-				statusCode: 429
-			}
-			return response;
-		}  
 	}
 	const response = {
 		statusCode: 200,
 		body: JSON.stringify({prices: results})
 	}
 	return response;
-	*/
 }
