@@ -74,10 +74,10 @@ exports.handler = async (event) => {
 		};
 		new AWS.Lambda().updateFunctionConfiguration(params, function(err, data) {
 		  if (err) console.log(err, err.stack);
-		  return {
-				statusCode: 429
-			};
 		});
+		return {
+			statusCode: 429
+		};
 	}
 	const response = {
 		statusCode: 200,
