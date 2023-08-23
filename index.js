@@ -77,7 +77,7 @@ exports.handler = async (event) => {
 		});
 		return {
 			statusCode: 429
-		};
+		}
 	}
 	const response = {
 		statusCode: 200,
