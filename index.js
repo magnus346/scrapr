@@ -81,7 +81,7 @@ exports.handler = async (event) => {
 	}
 	const response = {
 		statusCode: 200,
-		body: JSON.stringify({prices: results})
+		body: JSON.stringify({prices: results, rt: process.env.RESTART_TIME})
 	}
 	return response;
 }
