@@ -3,50 +3,58 @@ const cheerio = require("cheerio");
 const unirest = require("unirest");
 const AWS = require('aws-sdk');
 
-// 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
-
 const selectRandomUserAgent = () => {
     const userAgents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"]
     var randomNumber = Math.floor(Math.random() * userAgents.length);
     return userAgents[randomNumber];
 }
 
-const scraper = async(keyword, page) => {
-	let p = 10*(page-1);
-	let url = 'https://www.google.com/search?hl=fr&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=lang_fr&cr=countryFR&as_qdr=all&as_sitesearch=&as_occt=any&as_filetype=&tbs=&start='+p+'&as_q='+keyword;
-	return unirest
-	.get(url)
-	.headers({
-		"User-Agent": selectRandomUserAgent()
-	})
-	.then((response) => {
-		let $ = cheerio.load(response.body);
-
-		let results = [];
-		
-		if($(".g-recaptcha").length) {
-			throw new Error('Recaptcha');
-		}
-		
-		$("a[ping]:has(h3)").each((i,el) => {
-			results.push({
-				url: $(el).attr('href'),
-				title: $(el).find('h3').first().text()
-			})
+const scrapers = {
+	discogsPrices: async(release_id) => {
+		let url = 'https://www.discogs.com/fr/sell/release/'+release_id+'?sort=price%2Casc&limit=250&currency=EUR';
+		return unirest
+		.get(url)
+		.headers({
+			"User-Agent":
+			selectRandomUserAgent()
 		})
-		
-		return results;
-	})
-	.catch((error) => {
-		throw new Error('Recaptcha');
-	});
+		.then((response) => {
+			let $ = cheerio.load(response.body);
+
+			let results = [];
+			
+			if($(".g-recaptcha").length)
+				throw new Error('Recaptcha');
+			$("tr[data-release-id]").each((i,el) => {
+				results.push({
+					price: $(el).find('.item_price').find(".price").first().attr("data-pricevalue"),
+					currency: $(el).find('.item_price').find(".price").first().attr("data-currency"),
+					shipping: $(el).find('.item_price').find(".item_shipping").first().text().replace(/,/g,'.').replace(/[^\d\.]/g,''),
+					condition: $(el).find(".item_sleeve_condition").first().text()
+				})
+			})
+			return results;
+		})
+		.catch((error) => {
+			throw new Error('Recaptcha');
+		});
+	}
 }
 
 exports.handler = async (event) => {
-	const { keyword, page } = event.pathParameters;
+	/*
+	const ip = await axios.get('https://api.ipify.org/?format=json').catch(err => console.error(err))
+	return {
+		statusCode: 200,
+		body: JSON.stringify({ip: ip.data})
+	}
+	*/
+	const { id } = event.pathParameters;
 	let results = null;
 	try {
-		results = await scraper(keyword, page)
+		if(id=='__restart__')
+			throw new Error('Restart');
+		results = await scrapers.discogsPrices(id)
 	} catch(error) {
 		AWS.config.update({region:'eu-west-3'});
 		AWS.config.credentials = { 
