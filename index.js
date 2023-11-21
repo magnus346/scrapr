@@ -35,7 +35,7 @@ const scraper = async(keyword, page) => {
 			})
 		})
 		
-		return results;
+		return {results: results, debug: response.data};
 	})
 	.catch((error) => {
 		throw new Error('Recaptcha');
@@ -44,9 +44,13 @@ const scraper = async(keyword, page) => {
 
 exports.handler = async (event) => {
 	const { keyword, page } = event.pathParameters;
-	let results = null;
 	try {
-		results = await scraper(keyword, page)
+		const scraper_data = await scraper(keyword, page);
+		const response = {
+			statusCode: 200,
+			body: JSON.stringify({results: scraper_data.results, _debug: scraper_data.debug, _rt: process.env.RESTART_TIME})
+		}
+		return response;
 	} catch(error) {
 		AWS.config.update({region:'eu-west-3'});
 		AWS.config.credentials = { 
@@ -71,9 +75,4 @@ exports.handler = async (event) => {
 			statusCode: 429
 		};
 	}
-	const response = {
-		statusCode: 200,
-		body: JSON.stringify({results: results, _rt: process.env.RESTART_TIME})
-	}
-	return response;
 }
