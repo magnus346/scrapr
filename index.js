@@ -31,13 +31,12 @@ const scraper = async(keyword, page) => {
 		$("a:has(h3)").each((i,el) => {
 			let url = $(el).attr('href');
 			
-			if(url.startsWith('/'))
-				continue;
-			
-			results.push({
-				url: url,
-				title: $(el).find('h3').first().text()
-			})
+			if(!url.startsWith('/')) {
+				results.push({
+					url: url,
+					title: $(el).find('h3').first().text()
+				})
+			}
 		})
 		
 		return results;
