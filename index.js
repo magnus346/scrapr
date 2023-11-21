@@ -28,9 +28,9 @@ const scraper = async(keyword, page) => {
 			throw new Error('Recaptcha');
 		}
 		
-		$("a[ping]:has(h3)").each((i,el) => {
+		$(".g:has(a:has(h3))").each((i,el) => {
 			results.push({
-				url: $(el).attr('href'),
+				url: $(el).find('a').first().attr('href'),
 				title: $(el).find('h3').first().text()
 			})
 		})
