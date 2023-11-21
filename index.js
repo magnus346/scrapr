@@ -7,17 +7,18 @@ const AWS = require('aws-sdk');
 
 const selectRandomUserAgent = () => {
     const userAgents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"]
-    var randomNumber = Math.floor(Math.random() * userAgents.length);
+    const randomNumber = Math.floor(Math.random() * userAgents.length);
     return userAgents[randomNumber];
 }
 
 const scraper = async(keyword, page) => {
-	let p = 10*(page-1);
+	let p = 10*(parseInt(page)-1);
 	let url = 'https://www.google.com/search?hl=fr&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=lang_fr&cr=countryFR&as_qdr=all&as_sitesearch=&as_occt=any&as_filetype=&tbs=&start='+p+'&as_q='+keyword;
+	const userAgents = ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"]
 	return unirest
 	.get(url)
 	.headers({
-		"User-Agent": selectRandomUserAgent()
+		"User-Agent": userAgents[parseInt(page)] //selectRandomUserAgent()
 	})
 	.then((response) => {
 		let $ = cheerio.load(response.body);
@@ -29,7 +30,7 @@ const scraper = async(keyword, page) => {
 		}
 		
 		$("a:has(h3)").each((i,el) => {			
-			if(1 || !$(el).attr('href').startsWith('/')) {
+			if($(el).attr('href').startsWith('/') === false) {
 				results.push({
 					url: $(el).attr('href'),
 					title: $(el).find('h3').first().text()
