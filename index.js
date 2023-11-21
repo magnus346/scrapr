@@ -29,13 +29,18 @@ const scraper = async(keyword, page) => {
 		}
 		
 		$("a:has(h3)").each((i,el) => {
+			let url = $(el).attr('href');
+			
+			if(url.startsWith('/'))
+				continue;
+			
 			results.push({
-				url: $(el).attr('href'),
+				url: url,
 				title: $(el).find('h3').first().text()
 			})
 		})
 		
-		return {results: results, debug: response.body};
+		return results;
 	})
 	.catch((error) => {
 		throw new Error('Recaptcha');
@@ -48,7 +53,7 @@ exports.handler = async (event) => {
 		const scraper_data = await scraper(keyword, page);
 		const response = {
 			statusCode: 200,
-			body: JSON.stringify({results: scraper_data.results, _debug: scraper_data.debug, _rt: process.env.RESTART_TIME})
+			body: JSON.stringify({results: scraper_data, _rt: process.env.RESTART_TIME})
 		}
 		return response;
 	} catch(error) {
