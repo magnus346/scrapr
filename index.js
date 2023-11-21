@@ -28,12 +28,10 @@ const scraper = async(keyword, page) => {
 			throw new Error('Recaptcha');
 		}
 		
-		$("a:has(h3)").each((i,el) => {
-			let url = $(el).attr('href');
-			
-			if(!url.startsWith('/')) {
+		$("a:has(h3)").each((i,el) => {			
+			if(1 || !$(el).attr('href').startsWith('/')) {
 				results.push({
-					url: url,
+					url: $(el).attr('href'),
 					title: $(el).find('h3').first().text()
 				})
 			}
