@@ -35,7 +35,7 @@ const scraper = async(keyword, page) => {
 			})
 		})
 		
-		return results;
+		return {results: results, debug: response.body};
 	})
 	.catch((error) => {
 		throw new Error('Recaptcha');
@@ -48,7 +48,7 @@ exports.handler = async (event) => {
 		const scraper_data = await scraper(keyword, page);
 		const response = {
 			statusCode: 200,
-			body: JSON.stringify({results: scraper_data, _rt: process.env.RESTART_TIME})
+			body: JSON.stringify({results: scraper_data.results, _debug: scraper_data.debug, _rt: process.env.RESTART_TIME})
 		}
 		return response;
 	} catch(error) {
