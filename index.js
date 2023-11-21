@@ -35,10 +35,6 @@ const scraper = async(keyword, page) => {
 			})
 		})
 		
-		if(!results.length) {
-			throw new Error('Recaptcha');
-		}
-		
 		return results;
 	})
 	.catch((error) => {
