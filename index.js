@@ -35,7 +35,7 @@ const scraper = async(keyword, page) => {
 			})
 		})
 		
-		return {results: results, debug: response.data};
+		return {results: results, debug: response.body};
 	})
 	.catch((error) => {
 		throw new Error('Recaptcha');
