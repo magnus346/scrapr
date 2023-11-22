@@ -42,15 +42,20 @@ const scraper = async(keyword, page) => {
 	});
 }
 
-exports.handler = async (event) => {
-	const { keyword, page } = event.pathParameters;
+const default_handler = async () => {
+	return {
+		statusCode: 200,
+		body: JSON.stringify({_rt: process.env.RESTART_TIME})
+	};	
+}
+
+const scraper_handler = async (keyword, page) => {
 	try {
 		const scraper_data = await scraper(keyword, page);
-		const response = {
+		return {
 			statusCode: 200,
 			body: JSON.stringify({results: scraper_data, _rt: process.env.RESTART_TIME})
-		}
-		return response;
+		};
 	} catch(error) {
 		console.log(error);
 		AWS.config.update({region:'eu-west-3'});
@@ -75,5 +80,11 @@ exports.handler = async (event) => {
 		return {
 			statusCode: 429
 		};
-	}
+	}	
+}
+
+exports.handler = async (event) => {
+	if(typeof event.pathParameters.keyword !== "undefined" && typeof event.pathParameters.page !== "undefined")
+		return scraper_handler(event.pathParameters.keyword, event.pathParameters.page);
+	return default_handler();
 }
