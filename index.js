@@ -84,7 +84,7 @@ const scraper_handler = async (keyword, page) => {
 }
 
 exports.handler = async (event) => {
-	if(typeof event.pathParameters.keyword !== "undefined" && typeof event.pathParameters.page !== "undefined")
+	if(typeof event.pathParameters !== "undefined" && typeof event.pathParameters.keyword !== "undefined" && typeof event.pathParameters.page !== "undefined")
 		return scraper_handler(event.pathParameters.keyword, event.pathParameters.page);
 	return default_handler();
 }
