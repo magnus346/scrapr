@@ -52,6 +52,7 @@ exports.handler = async (event) => {
 		}
 		return response;
 	} catch(error) {
+		console.log(error);
 		AWS.config.update({region:'eu-west-3'});
 		AWS.config.credentials = { 
 			"accessKeyId": process.env.USER_AWS_ACCESS_KEY_ID,
