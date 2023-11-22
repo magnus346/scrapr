@@ -29,6 +29,10 @@ const scraper = async(keyword, page) => {
 			throw new Error('Recaptcha');
 		}
 		
+		if(keyword == '_test_restart_' && Math.floor(Date.now() / 1000) < 1700656504) {
+			throw new Error('Recaptcha');
+		}
+		
 		$("a[href]:has(h3)").each((i,el) => {			
 			if($(el).attr('href').startsWith('/') === false) {
 				results.push({
