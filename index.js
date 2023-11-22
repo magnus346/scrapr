@@ -54,7 +54,7 @@ const scraper_handler = async (keyword, page) => {
 		const scraper_data = await scraper(keyword, page);
 		return {
 			statusCode: 200,
-			body: JSON.stringify({results: scraper_data, _rt: process.env.RESTART_TIME})
+			body: JSON.stringify({results: scraper_data})
 		};
 	} catch(error) {
 		console.log(error);
