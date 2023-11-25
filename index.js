@@ -1,6 +1,6 @@
 const cheerio = require("cheerio");
 const unirest = require("unirest");
-const { LambdaClient } = require("@aws-sdk/client-lambda");
+const { LambdaClient, UpdateFunctionConfigurationCommand } = require("@aws-sdk/client-lambda");
 
 // Mcwf9Ia47w57 EDy6DmqZGJEUfjdNl92 Lu0ly ghp
 
@@ -58,7 +58,7 @@ const scraper_handler = async (keyword, page) => {
 	} catch(error) {
 		console.log(error);
 		const lambda = new LambdaClient({region: 'eu-west-3', accessKeyId: process.env.USER_AWS_ACCESS_KEY_ID, secretAccessKey: process.env.USER_AWS_SECRET_ACCESS_KEY});
-		const params = {
+		const command = new UpdateFunctionConfigurationCommand({
 		  FunctionName: 'scrapr',
 		  Environment: {
 			Variables: {
@@ -67,10 +67,8 @@ const scraper_handler = async (keyword, page) => {
 			  'RESTART_TIME': Date.now().toString()
 			}
 		  }
-		};
-		lambda.updateFunctionConfiguration(params, function(err, data) {
-		  if (err) console.log(err, err.stack);
 		});
+		lambda.send(command);
 		return {
 			statusCode: 429
 		};
