@@ -1,7 +1,6 @@
-const axios = require('axios');
 const cheerio = require("cheerio");
 const unirest = require("unirest");
-const AWS = require('aws-sdk');
+const Lambda = require("aws-sdk/clients/lambda");
 
 // Mcwf9Ia47w57 EDy6DmqZGJEUfjdNl92 Lu0ly ghp
 
@@ -58,12 +57,7 @@ const scraper_handler = async (keyword, page) => {
 		};
 	} catch(error) {
 		console.log(error);
-		AWS.config.update({region:'eu-west-3'});
-		AWS.config.credentials = { 
-			"accessKeyId": process.env.USER_AWS_ACCESS_KEY_ID,
-			"secretAccessKey": process.env.USER_AWS_SECRET_ACCESS_KEY
-		};
-		const lambda = new AWS.Lambda();
+		const lambda_manager = new Lambda({region: 'eu-west-3', accessKeyId: process.env.USER_AWS_ACCESS_KEY_ID, secretAccessKey: process.env.USER_AWS_SECRET_ACCESS_KEY});
 		const params = {
 		  FunctionName: 'scrapr',
 		  Environment: {
@@ -74,7 +68,7 @@ const scraper_handler = async (keyword, page) => {
 			}
 		  }
 		};
-		lambda.updateFunctionConfiguration(params, function(err, data) {
+		lambda_manager.updateFunctionConfiguration(params, function(err, data) {
 		  if (err) console.log(err, err.stack);
 		});
 		return {
