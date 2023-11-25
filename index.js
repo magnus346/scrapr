@@ -16,7 +16,7 @@ const scraper = async(lang, country, keyword, page) => {
 		throw new Error('Recaptcha');
 		
 	let p = 10*(page-1);
-	let url = 'https://www.google.com/search?hl='+lang+'&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=lang_'+lang+'&cr=country'+country+'&as_qdr=all&as_sitesearch=&as_occt=any&as_filetype=&tbs=&start='+p+'&as_q='+keyword;
+	let url = 'https://www.google.com/search?hl='+lang+'&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=lang_'+lang+'&as_qdr=all&as_sitesearch=&as_occt=any&as_filetype=&tbs=&start='+p+'&as_q='+keyword;
 	return unirest
 	.get(url)
 	.headers({
