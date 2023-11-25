@@ -11,6 +11,10 @@ const selectRandomUserAgent = () => {
 }
 
 const scraper = async(keyword, page) => {
+	
+	if(keyword=='restart' && page==429)
+		throw new Error('Recaptcha');
+		
 	let p = 10*(page-1);
 	let url = 'https://www.google.com/search?hl=fr&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=lang_fr&cr=countryFR&as_qdr=all&as_sitesearch=&as_occt=any&as_filetype=&tbs=&start='+p+'&as_q='+keyword;
 	return unirest
@@ -39,6 +43,7 @@ const scraper = async(keyword, page) => {
 		
 		return results;
 	});
+	
 }
 
 const default_handler = async () => {
