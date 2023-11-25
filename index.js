@@ -10,13 +10,13 @@ const selectRandomUserAgent = () => {
     return userAgents[randomNumber];
 }
 
-const scraper = async(keyword, page) => {
+const scraper = async(lang, country, keyword, page) => {
 	
 	if(keyword=='restart' && page==429)
 		throw new Error('Recaptcha');
 		
 	let p = 10*(page-1);
-	let url = 'https://www.google.com/search?hl=fr&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=lang_fr&cr=countryFR&as_qdr=all&as_sitesearch=&as_occt=any&as_filetype=&tbs=&start='+p+'&as_q='+keyword;
+	let url = 'https://www.google.com/search?hl='+lang+'&as_epq=&as_oq=&as_eq=&as_nlo=&as_nhi=&lr=lang_'+lang+'&cr=country'+country+'&as_qdr=all&as_sitesearch=&as_occt=any&as_filetype=&tbs=&start='+p+'&as_q='+keyword;
 	return unirest
 	.get(url)
 	.headers({
@@ -53,9 +53,12 @@ const default_handler = async () => {
 	};	
 }
 
-const scraper_handler = async (keyword, page) => {
+const scraper_handler = async (locale, keyword, page) => {
 	try {
-		const scraper_data = await scraper(keyword, page);
+		const locale_split = locale.trim().split('-');
+		const lang = typeof locale_split[0] !== "undefined" ? locale_split[0] : 'fr';
+		const country = typeof locale_split[1] !== "undefined" ? locale_split[1].toUpperCase() : lang.toUpperCase();
+		const scraper_data = await scraper(lang, country, keyword, page);
 		return {
 			statusCode: 200,
 			body: JSON.stringify({results: scraper_data})
@@ -81,7 +84,7 @@ const scraper_handler = async (keyword, page) => {
 }
 
 exports.handler = async (event) => {
-	if(event.pathParameters && typeof event.pathParameters.keyword !== "undefined" && typeof event.pathParameters.page !== "undefined")
-		return scraper_handler(event.pathParameters.keyword, event.pathParameters.page);
+	if(event.pathParameters && typeof event.pathParameters.locale !== "undefined" && typeof event.pathParameters.keyword !== "undefined" && typeof event.pathParameters.page !== "undefined")
+		return scraper_handler(event.pathParameters.locale, event.pathParameters.keyword, event.pathParameters.page);
 	return default_handler();
 }
