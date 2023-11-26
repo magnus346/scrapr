@@ -1,5 +1,5 @@
 const cheerio = require("cheerio");
-const unirest = require("unirest");
+const axios = require("axios");
 const { LambdaClient, UpdateFunctionConfigurationCommand } = require("@aws-sdk/client-lambda");
 
 // Mcwf9Ia47w57 EDy6DmqZGJEUfjdNl92 Lu0ly ghp
@@ -16,14 +16,14 @@ const scraper = async(lang, country, keyword, start) => {
 		throw new Error('Recaptcha');
 
 	let url = 'https://www.google.com/search?hl='+lang+'&gl='+country+'&start='+start+'&q='+keyword;
-	return unirest
-	.get(url)
-	.headers({
-		"Referer": "https://www.google.com",
-		"User-Agent": selectRandomUserAgent()
+	return axios.get(url, {
+		headers: {
+			"Referer": "https://www.google.com",
+			"User-Agent": selectRandomUserAgent()
+		}
 	})
 	.then((response) => {
-		let $ = cheerio.load(response.body);
+		let $ = cheerio.load(response.data);
 
 		let results = [];
 		
