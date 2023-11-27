@@ -28,12 +28,12 @@ const restart_server = () => {
 	};	
 }
 
-const googleserp_scraper = async(lang, country, keyword, start) => {
+const googleserp_scraper = async(lang, country, term, start) => {
 	
-	if(keyword=='restart' && start==429)
+	if(term=='restart' && start==429)
 		throw new Error('Recaptcha');
 
-	let url = 'https://www.google.com/search?hl='+lang+'&gl='+country+'&start='+start+'&q='+keyword;
+	let url = 'https://www.google.com/search?hl='+lang+'&gl='+country+'&start='+start+'&q='+term;
 	return axios.get(url, {
 		headers: {
 			"Referer": "https://www.google.com",
@@ -93,12 +93,12 @@ const default_handler = async () => {
 	};	
 }
 
-const googleserp_handler = async (locale, keyword, start) => {
+const googleserp_handler = async (locale, term, start) => {
 	try {
 		const locale_split = locale.trim().toLowerCase().split('-');
 		const lang = typeof locale_split[0] !== "undefined" ? locale_split[0] : 'fr';
 		const country = typeof locale_split[1] !== "undefined" ? locale_split[1] : lang;
-		const scraper_data = await googleserp_scraper(lang, country, keyword, start);
+		const scraper_data = await googleserp_scraper(lang, country, term, start);
 		return {
 			statusCode: 200,
 			body: JSON.stringify({results: scraper_data})
@@ -129,18 +129,9 @@ const analysis_handler = async (url) => {
 }
 
 exports.handler = async (event) => {
-	return {
-		statusCode: 200,
-		body: JSON.stringify(event)
-	};
-	/*
-	if(event.pathParameters && typeof event.pathParameters.handler !== "undefined") {
-		if(event.pathParameters.handler == 'google-serp' && typeof event.pathParameters.locale !== "undefined" && typeof event.pathParameters.keyword !== "undefined" && typeof event.pathParameters.start !== "undefined")
-			return googleserp_handler(event.pathParameters.locale, event.pathParameters.keyword, event.pathParameters.start);
-		if(event.pathParameters.handler == 'analysis' && typeof event.pathParameters.url !== "undefined")
-			return analysis_handler(event.pathParameters.url);
-		return { statusCode: 404 };	
-	}
+	if(event.resource == '/google-serp/{locale}/{term}/{start}' && event.pathParameters && typeof event.pathParameters.locale !== "undefined" && typeof event.pathParameters.term !== "undefined" && typeof event.pathParameters.start !== "undefined")
+		return googleserp_handler(event.pathParameters.locale, event.pathParameters.term, event.pathParameters.start);
+	if(event.resource == '/analysis/{url}' && event.pathParameters && typeof event.pathParameters.url !== "undefined")
+		return analysis_handler(event.pathParameters.url);
 	return default_handler();
-	*/
 }
