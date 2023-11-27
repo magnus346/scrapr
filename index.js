@@ -129,6 +129,11 @@ const analysis_handler = async (url) => {
 }
 
 exports.handler = async (event) => {
+	return {
+		statusCode: 200,
+		body: JSON.stringify(event)
+	};
+	/*
 	if(event.pathParameters && typeof event.pathParameters.handler !== "undefined") {
 		if(event.pathParameters.handler == 'google-serp' && typeof event.pathParameters.locale !== "undefined" && typeof event.pathParameters.keyword !== "undefined" && typeof event.pathParameters.start !== "undefined")
 			return googleserp_handler(event.pathParameters.locale, event.pathParameters.keyword, event.pathParameters.start);
@@ -137,4 +142,5 @@ exports.handler = async (event) => {
 		return { statusCode: 404 };	
 	}
 	return default_handler();
+	*/
 }
