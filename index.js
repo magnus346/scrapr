@@ -64,6 +64,7 @@ const googleserp_scraper = async(lang, country, term, start) => {
 }
 
 const analysis_scraper = async(url) => {
+	const tagslist = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'li', 'p', 'div', 'main', 'section', 'header', 'footer'];
 	const html = await axios.get(url, {
 		headers: {
 			"Referer": "https://www.google.com",
